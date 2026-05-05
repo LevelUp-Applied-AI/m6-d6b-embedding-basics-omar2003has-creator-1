@@ -108,7 +108,5 @@ if __name__ == "__main__":
         if neighbors:
             print(f"{'Rank':<5} | {'Word':<12} | {'Similarity':<10}")
             print("-" * 35)
-            
-            # Print Table Rows
             for i, (word, sim) in enumerate(neighbors, 1):
                 print(f"{i:<5} | {word:<12} | {sim:<10.4f}")
