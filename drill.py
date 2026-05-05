@@ -7,22 +7,26 @@ pre-trained GloVe word embeddings.
 
 import numpy as np
 
-
 def load_glove(filepath):
-    """Load pre-trained GloVe vectors from a text file.
-
-    Returns a dict mapping each word to a numpy array of shape (50,).
-    """
     embeddings = {}
+    count = 0 
+    print ("#Task 1:\n")
     with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
             parts = line.strip().split()
-            if not parts:
-                continue
-            # The first element is the word, the rest are the vector components
+            if not parts: continue          
             word = parts[0]
             vector = np.array(parts[1:], dtype=np.float32)
             embeddings[word] = vector
+            
+            count += 1 
+            
+            if count <= 5:
+                print(f"--- Word #{count}: -> {word} ---")
+                print(f"Vector Shape: {vector.shape}")
+                print(f"First 3 values: {vector[:3]}") 
+                print("-" * 30)
+    print("*" * 50)            
     return embeddings
 
 
@@ -54,11 +58,18 @@ def nearest_neighbors(word, embeddings, n=5):
     """
     if word not in embeddings:
         return []
-
+    #query_vec -> the vector representation of the input word  like "king" or "queen" etc.
+    # query_vec equals -> number like [ 0.50451  0.68607 -0.59517 ......] for a 50-dimensional embedding
     query_vec = embeddings[word]
     results = []
+    print (f"Finding nearest neighbors for '{word}'...\n")
+    print(f"Query Vector Shape: {query_vec.shape}")
+    print(f"First 3 values: {query_vec[:3]}\n")
 
+
+    print("-" * 30)
     for target_word, target_vec in embeddings.items():
+        #embeddings.items() -> returns a list of tuples -> (word(Name), vector(Array.NumberS)) like [("king", [0.50451, 0.68607, -0.59517, ...]), ("queen", [0.4321, 0.1234, -0.5678, ...]), ...]
         # Exclude the query word itself
         if target_word == word:
             continue
@@ -80,8 +91,9 @@ if __name__ == "__main__":
         print(f"Loaded {len(glove)} word vectors")
 
         # Task 2: Word similarity
-        sim = cosine_similarity(glove.get("king", np.zeros(50)),
-                                glove.get("queen", np.zeros(50)))
+        print("\n#Task 2:\n")
+        sim = cosine_similarity(glove.get("king", np.zeros(50)), glove.get("queen", np.zeros(50)))
+                               
         if sim is not None:
             print(f"cosine('king', 'queen') = {sim:.4f}")
 
@@ -89,8 +101,14 @@ if __name__ == "__main__":
                                  glove.get("banana", np.zeros(50)))
         if sim2 is not None:
             print(f"cosine('king', 'banana') = {sim2:.4f}")
-
+        print("*" * 50)
         # Task 3: Nearest neighbors
+        print("\n#Task 3:\n")
         neighbors = nearest_neighbors("king", glove, n=5)
         if neighbors:
-            print(f"Nearest to 'king': {neighbors}")
+            print(f"{'Rank':<5} | {'Word':<12} | {'Similarity':<10}")
+            print("-" * 35)
+            
+            # Print Table Rows
+            for i, (word, sim) in enumerate(neighbors, 1):
+                print(f"{i:<5} | {word:<12} | {sim:<10.4f}")
